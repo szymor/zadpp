@@ -15,6 +15,7 @@ struct SPort
 	int posY[8];
 	BYTE state;
 	BYTE wanted_state;
+	char label[8][16];
 };
 
 BYTE numberOfPorts = 0;
@@ -122,6 +123,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			itoa(j,tmp2,10);
 			strcat(tmp1,tmp2);
 
+			GetPrivateProfileString(tmp1, "label", "", zadport[i].label[j], 16, iniPath);
 			zadport[i].posX[j] = GetPrivateProfileInt(tmp1,"posX",CW_USEDEFAULT,iniPath);
 			zadport[i].posY[j] = GetPrivateProfileInt(tmp1,"posY",CW_USEDEFAULT,iniPath);
 			if( (i == 0) && (j == 0) )
@@ -364,7 +366,14 @@ LRESULT CALLBACK ZadWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		Arc(hdcbuff,1,1,126,126,0,0,0,0);
 
-		sprintf(aux, "P%d.%d", whichPort, whichBit);
+		if (!strcmp(zadport[whichPort].label[whichBit], ""))
+		{
+			sprintf(aux, "P%d.%d", whichPort, whichBit);
+		}
+		else
+		{
+			strcpy(aux, zadport[whichPort].label[whichBit]);
+		}
 		GetTextExtentPoint32(hdcbuff,aux,strlen(aux),&size);
 		SetTextColor(hdcbuff,RGB(255,255,255));
 		SetBkColor(hdcbuff,0);
